@@ -2,6 +2,8 @@ assignments = []
 rows = 'ABCDEFGHI'
 cols = '123456789'
 
+import time, random
+
 
 def assign_value(values, box, value):
     """
@@ -33,7 +35,10 @@ boxes = cross(rows, cols)
 row_units = [cross(r, cols) for r in rows]
 column_units = [cross(rows, c) for c in cols]
 square_units = [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
-unitlist = row_units + column_units + square_units
+# diagonal units for the diagonal sudoku implmentation
+diagonal_units = [['A1', 'B2', 'C3', 'D4', 'E5', 'F6', 'G7', 'H8', 'I9'], ['A9', 'B8', 'C7', 'D6', 'E5', 'F4', 'G3', 'H2', 'I1']]
+# print(diagonal_units)
+unitlist = row_units + column_units + square_units + diagonal_units
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s],[])) - set([s])) for s in boxes)
 
@@ -54,7 +59,6 @@ def grid_values(grid):
             chars.append(c)
         if c == '.':
             chars.append(digits)
-            # chars.append(c)
     assert len(chars) == 81
     return dict(zip(boxes, chars))
 
@@ -130,10 +134,14 @@ def solve(grid):
     return search(values)
 
 if __name__ == '__main__':
-    # diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
-    simple_soduku_grid = '..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..'
-    # solve(simple_soduku_grid)
-    display(solve(simple_soduku_grid))
+    diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+    # simple_soduku_grid = '..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..'
+    # display(solve(diag_sudoku_grid))
+
+    start = time.clock()
+    display(solve(diag_sudoku_grid))
+    end = time.clock()
+    print("time taken ",(end-start))
 
     try:
         from visualize import visualize_assignments
