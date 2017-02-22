@@ -26,6 +26,31 @@ def naked_twins(values):
 
     # Find all instances of naked twins
     # Eliminate the naked twins as possibilities for their peers
+    boxes = cross(rows, cols)
+    row_units = [cross(r, cols) for r in rows]
+    column_units = [cross(rows, c) for c in cols]
+    square_units = [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
+    unitlist = row_units + column_units + square_units
+    units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
+    peers = dict((s, set(sum(units[s],[])) - set([s])) for s in boxes)
+
+    twins = {}
+    for box in values.keys():
+        if len(values[box]) == 2:
+            for unit in units[box]:
+                for element in unit:
+                    if values[element] == values[box] and element != box:
+                        twins.update({box:element})
+
+    for twin_key in twins.keys():
+        twin_value = twins[twin_key]
+        for peer_key in peers[twin_key]:
+            for peer_value in peers[twin_value]:
+                if peer_key == peer_value and len(values[peer_key]) > 2:
+                    for element in values[twin_key]:
+                        values[peer_key] = values[peer_key].replace(element, '')
+
+    return values
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
@@ -39,6 +64,7 @@ square_units = [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', 
 diagonal_units = [['A1', 'B2', 'C3', 'D4', 'E5', 'F6', 'G7', 'H8', 'I9'], ['A9', 'B8', 'C7', 'D6', 'E5', 'F4', 'G3', 'H2', 'I1']]
 # print(diagonal_units)
 unitlist = row_units + column_units + square_units + diagonal_units
+# unitlist = row_units + column_units + square_units
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
 peers = dict((s, set(sum(units[s],[])) - set([s])) for s in boxes)
 
@@ -138,10 +164,10 @@ if __name__ == '__main__':
     # simple_soduku_grid = '..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..'
     # display(solve(diag_sudoku_grid))
 
-    start = time.clock()
+    # start = time.clock()
     display(solve(diag_sudoku_grid))
-    end = time.clock()
-    print("time taken ",(end-start))
+    # end = time.clock()
+    # print("time taken ",(end-start))
 
     try:
         from visualize import visualize_assignments
